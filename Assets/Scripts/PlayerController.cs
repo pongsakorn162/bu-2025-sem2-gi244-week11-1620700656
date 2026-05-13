@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -54,25 +55,51 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    // 1. รวมเงื่อนไขใน OnTriggerEnter อันเดิม
+    private void OnTriggerEnter(Collider other)
     {
+        // เงื่อนไขเดิม (PowerUp ปกติ)
         if (other.CompareTag("PowerUp"))
         {
             hasPowerup = true;
             Destroy(other.gameObject);
-            StartCoroutine(PowerupCooldown());
+            StartCoroutine(PowerUpCooldown());
+        }
+
+        // --- เพิ่มเงื่อนไขใหม่ (PowerUpStun) เข้าไปตรงนี้ ---
+        if (other.CompareTag("PowerUpStun"))
+        {
+            Destroy(other.gameObject);
+            StartCoroutine(StunRoutine());
         }
     }
 
-    IEnumerator PowerupCooldown()
+    private string PowerUpCooldown()
     {
-        powerUpIndicator.SetActive(true);
-        yield return new WaitForSeconds(10f);
-        hasPowerup = false;
-        Debug.Log("Powerup has ended");
-        powerUpIndicator.SetActive(false);
+        throw new NotImplementedException();
     }
 
+    // 2. วาง IEnumerator ใหม่ ต่อท้ายฟังก์ชันอื่นๆ
+    IEnumerator StunRoutine()
+    {
+        // ค้นหา Enemy ทั้งหมดในฉาก
+        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+
+        // สั่งให้ศัตรูทุกตัวหยุด
+        foreach (Enemy e in enemies)
+        {
+            e.isStunned = true;
+        }
+
+        // รอ 5 วินาที
+        yield return new WaitForSeconds(5);
+
+        // สั่งให้ศัตรูกลับมาเดินต่อ
+        foreach (Enemy e in enemies)
+        {
+            if (e != null) e.isStunned = false;
+        }
+    }
     void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.CompareTag("Enemy") && hasPowerup)

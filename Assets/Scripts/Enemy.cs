@@ -3,6 +3,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public float speed = 3f;
+    public bool isStunned = false;
     private Rigidbody rb;
     private GameObject player;
 
@@ -20,8 +21,16 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var dir = player.transform.position - transform.position;
-        dir = dir.normalized;
-        rb.AddForce(dir * speed);
+        if (!isStunned)
+        {
+            var dir = player.transform.position - transform.position;
+            dir = dir.normalized;
+            rb.AddForce(dir * speed);
+
+        }
+        else 
+        {
+            rb.linearVelocity = Vector3.zero;
+        }
     }
 }
