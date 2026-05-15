@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour
         {
             hasPowerup = true;
             Destroy(other.gameObject);
-            StartCoroutine(PowerUpCooldown());
+            Coroutine coroutine = StartCoroutine(PowerUpCooldown());
         }
 
         // --- เพิ่มเงื่อนไขใหม่ (PowerUpStun) เข้าไปตรงนี้ ---
@@ -74,9 +74,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private string PowerUpCooldown()
+    IEnumerator PowerUpCooldown()
     {
-        throw new NotImplementedException();
+        powerUpIndicator.SetActive(true);
+        yield return new WaitForSeconds(10); // รอ 10 วินาทีตามปกติ
+        hasPowerup = false;
+        powerUpIndicator.SetActive(false);
+        Debug.Log("Powerup has ended");
     }
 
     // 2. วาง IEnumerator ใหม่ ต่อท้ายฟังก์ชันอื่นๆ
